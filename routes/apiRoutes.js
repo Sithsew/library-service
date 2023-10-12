@@ -1,7 +1,6 @@
 const express = require("express");
 const authors = require("./authors");
 const books = require("./books");
-const employees = require("./employees");
 const users = require("./users");
 
 const router = express.Router();
@@ -19,7 +18,6 @@ router.get('/logout', logoutController.handleLogout);
 
 
 router.use(verifyJWT);
-router.use('/employees', employees);
 router.use('/users', users);
 router.use('/authors', authors);
 router.use('/books', books);
