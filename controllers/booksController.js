@@ -3,9 +3,29 @@ const Author = require("../models/Author");
 const mongoose = require("mongoose");
 
 const getAllBooks = async (req, res) => {
-  const books = await Book.find();
-  if (!books) return res.status(204).json({ message: "No Books found" });
-  res.json(books);
+  try {
+    const { name, author } = req.query;
+    console.log(name,author,'===========')
+    let conditions = {};
+
+    if (name) {
+      conditions.name = { $regex: new RegExp(name, 'i') };
+    }
+
+    if (author && author != 'all') {
+      conditions.author = author;
+    }
+
+    const books = await Book.find(conditions).populate("author");
+
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+  // const books = await Book.find();
+  // if (!books) return res.status(204).json({ message: "No Books found" });
+  // res.json(books);
 };
 
 const deleteBook = async (req, res) => {
