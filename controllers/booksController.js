@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const getAllBooks = async (req, res) => {
   try {
     const { name, author } = req.query;
-    console.log(name,author,'===========')
     let conditions = {};
 
     if (name) {
@@ -23,9 +22,6 @@ const getAllBooks = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-  // const books = await Book.find();
-  // if (!books) return res.status(204).json({ message: "No Books found" });
-  // res.json(books);
 };
 
 const deleteBook = async (req, res) => {

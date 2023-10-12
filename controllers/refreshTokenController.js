@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
+    if (!cookies?.jwt) return res.status(401).json({ error: "You don't have permission for this action" });
     const refreshToken = cookies.jwt;
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
 
@@ -15,14 +15,14 @@ const handleRefreshToken = async (req, res) => {
             refreshToken,
             process.env.REFRESH_TOKEN_SECRET,
             async (err, decoded) => {
-                if (err) return res.sendStatus(403); //Forbidden
+                if (err) return res.status(403).json({ error: "Forbidden" }); //Forbidden
                 // Delete refresh tokens of hacked user
                 const hackedUser = await User.findOne({ username: decoded.username }).exec();
                 hackedUser.refreshToken = [];
                 const result = await hackedUser.save();
             }
         )
-        return res.sendStatus(403); //Forbidden
+        return res.status(403).json({ error: "Forbidden" }); //Forbidden
     }
 
     const newRefreshTokenArray = foundUser.refreshToken.filter(rt => rt !== refreshToken);
@@ -37,7 +37,7 @@ const handleRefreshToken = async (req, res) => {
                 foundUser.refreshToken = [...newRefreshTokenArray];
                 const result = await foundUser.save();
             }
-            if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
+            if (err || foundUser.username !== decoded.username) return res.status(403).json({ error: "Forbidden" });
 
             // Refresh token was still valid
             const roles = Object.values(foundUser.roles);
